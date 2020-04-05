@@ -1,0 +1,19 @@
+/* Курс "Базы данных"
+Урок 2 "Управление БД. Язык запросов SQL."
+Задача 3.
+Создайте дамп базы данных example из предыдущего задания, разверните содержимое дампа в новую базу данных sample
+*/
+
+to dump database 'example' to 'sample' and import new database 'sample'
+
+
+shell> mysqldump example > sample.sql
+shell> mysql
+
+mysql> CREATE DATABASE sample;
+
+shell> mysql sample < sample.sql
+shell> mysql
+
+mysql> USE sample;
+mysql> SHOW TABLES;
