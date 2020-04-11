@@ -7,7 +7,7 @@ ii. Написать скрипт, возвращающий список име�
 USE vk;
 
 SELECT DISTINCT firstname FROM users ORDER BY firstname;
-
+SELECT firstname FROM users GROUP BY firstname ORDER BY firstname;
 
 /*
  Задача 3.
@@ -20,7 +20,7 @@ DELIMITER //
 CREATE PROCEDURE alter_table()
 BEGIN
   DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN END;
-  ALTER TABLE profiles ADD COLUMN is_active BOOL DEFAULT TRUE;
+  ALTER TABLE profiles ADD COLUMN is_active BIT DEFAULT 1;
 END //
 DELIMITER ;
 CALL alter_table();
@@ -28,8 +28,9 @@ DROP PROCEDURE alter_table;
 
 
 -- SELECT user_id, birthday FROM profiles WHERE birthday >= NOW() - INTERVAL 18 YEAR;
-UPDATE profiles SET is_active = FALSE WHERE birthday >= NOW() - INTERVAL 18 YEAR;
+UPDATE profiles SET is_active = 0 WHERE birthday >= NOW() - INTERVAL 18 YEAR;
 SELECT user_id, birthday, is_active FROM profiles WHERE birthday >= NOW() - INTERVAL 18 YEAR;
+SELECT * FROM profiles WHERE is_active = 0 ORDER BY birthday;
 
 
 
@@ -40,6 +41,10 @@ SELECT user_id, birthday, is_active FROM profiles WHERE birthday >= NOW() - INTE
 INSERT INTO messages(from_user_id, to_user_id, body, created_at) VALUES ('1','10','Message from Future.','2071-12-19 11:28:41');
 SELECT id, body, created_at FROM messages m WHERE created_at > NOW();
 DELETE FROM messages WHERE created_at > NOW();
-SELECT id, body, created_at FROM messages m WHERE created_at > NOW();
+SELECT id, body, created_at FROM messages WHERE created_at > NOW();
 
 
+ALTER TABLE messages ADD COLUMN is_deleted BIT DEFAULT 0;
+UPDATE messages SET created_at = NOW() + INTERVAL 1 YEAR LIMIT 2;
+UPDATE messages SET is_deleted WHERE created_at > NOW();
+SELECT * FROM messages ORDER BY created_at DESC;
