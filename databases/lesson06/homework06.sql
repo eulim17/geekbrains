@@ -50,6 +50,33 @@ GROUP BY `correspondent` ORDER BY total DESC LIMIT 1;
 
 
 
+-- JOIN version
+SELECT
+    correspondent,
+    COUNT(*) AS total
+FROM (
+    SELECT 
+        CONCAT(users.firstname, ' ', users.lastname) AS correspondent,
+        messages.body 
+    FROM users
+        JOIN messages ON messages.from_user_id = users.id OR messages.to_user_id = users.id
+        JOIN friend_requests AS fr ON fr.initiator_user_id = users.id
+    WHERE fr.target_user_id = 1 and fr.status = 'approved'
+    UNION
+    SELECT 
+        CONCAT(users.firstname, ' ', users.lastname) AS correspondent,
+        messages.body 
+    FROM users
+        JOIN messages ON messages.from_user_id = users.id OR messages.to_user_id = users.id
+        JOIN friend_requests AS fr ON fr.target_user_id = users.id
+    WHERE fr.initiator_user_id = 1 and fr.status = 'approved'
+) AS list
+GROUP BY correspondent
+ORDER BY total DESC LIMIT 1;
+    
+    
+
+
 /* Задача 2.
  * Подсчитать общее количество лайков, которые получили пользователи младше 10 лет.
  */
@@ -71,6 +98,18 @@ SELECT COUNT(*) FROM likes WHERE media_id IN (
 );
 
 
+
+-- JOIN version
+SELECT COUNT(*)
+FROM users
+    JOIN profiles ON profiles.user_id = users.id
+    JOIN media ON media.user_id = users.id
+    JOIN likes ON likes.media_id = media.id 
+WHERE NOW() <= birthday + INTERVAL 10 YEAR
+
+
+
+
 /* Задача 3.
 Определить кто больше поставил лайков (всего) - мужчины или женщины?
 */
@@ -78,3 +117,14 @@ SELECT COUNT(*) FROM likes WHERE media_id IN (
 
 SELECT gender, COUNT(gender) AS total FROM profiles WHERE user_id IN (SELECT user_id FROM likes) 
 GROUP BY gender ORDER BY total DESC LIMIT 1;
+
+
+-- JOIN version
+SELECT 
+    gender,
+    COUNT(*) AS total
+FROM users
+    JOIN profiles ON profiles.user_id = users.id 
+    JOIN likes ON likes.user_id = users.id 
+GROUP BY gender
+ORDER BY total DESC;
