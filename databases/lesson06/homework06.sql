@@ -34,7 +34,7 @@ OR
 
 -- the most popular correspondent
 SELECT IF(from_user_id = 1, to_user_id, from_user_id) AS `correspondent`,
-       COUNT(*) as total
+       COUNT(*) AS total
 FROM messages 
 WHERE (to_user_id = 1 AND from_user_id IN (
         SELECT initiator_user_id FROM friend_requests WHERE (target_user_id = 1) AND status='approved'
@@ -45,7 +45,7 @@ OR
         SELECT initiator_user_id FROM friend_requests WHERE (target_user_id = 1) AND status='approved'
         UNION 
         SELECT target_user_id FROM friend_requests WHERE (initiator_user_id = 1) AND status='approved'))
-GROUP BY `correspondent` ORDER by total DESC LIMIT 1;
+GROUP BY `correspondent` ORDER BY total DESC LIMIT 1;
 
 
 
