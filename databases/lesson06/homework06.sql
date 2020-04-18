@@ -74,7 +74,31 @@ FROM (
 GROUP BY correspondent
 ORDER BY total DESC LIMIT 1;
     
-    
+  
+-- another JOIN version
+SELECT
+    friendname,
+    COUNT(*) AS total
+FROM (
+    SELECT
+        users.id,
+        CONCAT(users.firstname, ' ', users.lastname) AS friendname
+    FROM users
+        JOIN friend_requests fr ON fr.initiator_user_id = users.id
+    WHERE fr.target_user_id = 1 and fr.status = 'approved'
+    UNION
+    SELECT
+        users.id,
+        CONCAT(users.firstname, ' ', users.lastname) AS friendname
+    FROM users
+        JOIN friend_requests fr ON fr.target_user_id = users.id
+    WHERE fr.initiator_user_id = 1 and fr.status = 'approved'
+    ) AS friends
+JOIN messages ON messages.from_user_id = friends.id OR messages.to_user_id = friends.id
+GROUP BY friendname 
+ORDER BY total DESC LIMIT 1;
+
+
 
 
 /* Задача 2.
