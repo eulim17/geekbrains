@@ -69,10 +69,16 @@ INSERT INTO cities (ru_name, en_name) VALUES
 ('Казань', 'kazan'),
 ('Иркутск', 'irkutsk');
 
-
+-- the first version
 SELECT id, (SELECT ru_name FROM cities WHERE en_name = from_city) as `from`,
-       (SELECT ru_name FROM cities WHERE en_name = to_city) as `to`
+           (SELECT ru_name FROM cities WHERE en_name = to_city) as `to`
 FROM flights;
 
+
+-- the second version
+SELECT `from`.ru_name AS `вылет`, `to`.ru_name AS `прилет`
+FROM flights 
+JOIN cities AS `from` ON flights.from_city = `from`.en_name
+JOIN cities AS `to`   ON flights.to_city   = `to`.en_name;
 
 
